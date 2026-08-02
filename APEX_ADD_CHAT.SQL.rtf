@@ -1,0 +1,452 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset178 GeezaPro;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh10200\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 create
+\f1  
+\f0 or
+\f1  
+\f0 replace
+\f1  
+\f0 PROCEDURE
+\f1  
+\f0 APEX_ADD_CHAT
+\f1  
+\f0 (
+\f1 \
+    
+\f0 P_FILE_COLL
+\f1  
+\f0 IN
+\f1  
+\f0 VARCHAR2,
+\f1 \
+    
+\f0 P_FLAG
+\f1       
+\f0 OUT
+\f1  
+\f0 VARCHAR2,
+\f1 \
+    
+\f0 P_MSG
+\f1        
+\f0 OUT
+\f1  
+\f0 VARCHAR2
+\f1 \
+
+\f0 )
+\f1 \
+
+\f0 IS
+\f1 \
+    
+\f0 V_CHAT_ID
+\f1  
+\f0 NUMBER;
+\f1 \
+\
+    
+\f0 CURSOR
+\f1  
+\f0 FILES
+\f1  
+\f0 IS
+\f1 \
+        
+\f0 SELECT
+\f1 \
+            
+\f0 C001
+\f1     
+\f0 AS
+\f1  
+\f0 P_FILENAME,
+\f1 \
+            
+\f0 C002
+\f1     
+\f0 AS
+\f1  
+\f0 P_MIME_TYPE,
+\f1 \
+            
+\f0 BLOB001
+\f1  
+\f0 AS
+\f1  
+\f0 P_FILE_CONTENT
+\f1 \
+        
+\f0 FROM
+\f1  
+\f0 APEX_COLLECTIONS
+\f1 \
+        
+\f0 WHERE
+\f1  
+\f0 COLLECTION_NAME
+\f1  
+\f0 =
+\f1  
+\f0 P_FILE_COLL;
+\f1 \
+\
+
+\f0 BEGIN
+\f1 \
+\
+    
+\f0 --
+\f1  
+\f0 Validate
+\f1  
+\f0 message
+\f1 \
+    
+\f0 IF
+\f1  
+\f0 TRIM(V('P5_CHAT_TXT'))
+\f1  
+\f0 IS
+\f1  
+\f0 NULL
+\f1  
+\f0 THEN
+\f1 \
+        
+\f0 P_FLAG
+\f1  
+\f0 :=
+\f1  
+\f0 'F';
+\f1 \
+        
+\f0 P_MSG
+\f1   
+\f0 :=
+\f1  
+\f0 'Please
+\f1  
+\f0 enter
+\f1  
+\f0 a
+\f1  
+\f0 message
+\f1 .
+\f0 ';
+\f1 \
+        
+\f0 RETURN;
+\f1 \
+    
+\f0 END
+\f1  
+\f0 IF;
+\f1 \
+\
+    
+\f0 --
+\f1  
+\f0 Validate
+\f1  
+\f0 chat
+\f1  
+\f0 type
+\f1 \
+    
+\f0 IF
+\f1  
+\f0 V('P5_CHAT_TYPE')
+\f1  
+\f0 IS
+\f1  
+\f0 NULL
+\f1  
+\f0 THEN
+\f1 \
+        
+\f0 P_FLAG
+\f1  
+\f0 :=
+\f1  
+\f0 'F';
+\f1 \
+        
+\f0 P_MSG
+\f1   
+\f0 :=
+\f1  
+\f0 'Please
+\f1  
+\f0 select
+\f1  
+\f0 the
+\f1  
+\f0 chat
+\f1  
+\f0 type
+\f1 .
+\f0 ';
+\f1 \
+        
+\f0 RETURN;
+\f1 \
+    
+\f0 END
+\f1  
+\f0 IF;
+\f1 \
+\
+    
+\f0 --
+\f1  
+\f0 Insert
+\f1  
+\f0 chat
+\f1  
+\f0 message
+\f1 \
+    
+\f0 INSERT
+\f1  
+\f0 INTO
+\f1  
+\f0 CHAT_MSG
+\f1 \
+    
+\f0 (
+\f1 \
+        
+\f0 TRANS_PK,
+\f1 \
+        
+\f0 TRANS_TYPE,
+\f1 \
+        
+\f0 CHAT_TXT,
+\f1 \
+        
+\f0 CHAT_DATE,
+\f1 \
+        
+\f0 G_USER_ID,
+\f1 \
+        
+\f0 CHAT_TYPE_FLAG
+\f1 \
+    
+\f0 )
+\f1 \
+    
+\f0 VALUES
+\f1 \
+    
+\f0 (
+\f1 \
+        
+\f0 V('P5_TRANS_PK'),
+\f1 \
+        
+\f0 V('P5_TRANS_TYPE'),
+\f1 \
+        
+\f0 TRIM(V('P5_CHAT_TXT')),
+\f1 \
+        
+\f0 SYSDATE,
+\f1 \
+        
+\f0 V('G_USER_ID'),
+\f1 \
+        
+\f0 V('P5_CHAT_TYPE')
+\f1 \
+    
+\f0 )
+\f1 \
+    
+\f0 RETURNING
+\f1  
+\f0 CHAT_ID_M
+\f1 \
+    
+\f0 INTO
+\f1  
+\f0 V_CHAT_ID;
+\f1 \
+\
+    
+\f0 --
+\f1  
+\f0 Insert
+\f1  
+\f0 attachments
+\f1  
+\f0 (optional)
+\f1 \
+    
+\f0 IF
+\f1  
+\f0 APEX_COLLECTION
+\f1 .
+\f0 COLLECTION_EXISTS(P_FILE_COLL)
+\f1  
+\f0 THEN
+\f1 \
+\
+        
+\f0 FOR
+\f1  
+\f0 R
+\f1  
+\f0 IN
+\f1  
+\f0 FILES
+\f1  
+\f0 LOOP
+\f1 \
+\
+            
+\f0 INSERT
+\f1  
+\f0 INTO
+\f1  
+\f0 CHAT_ATTACHMENTS
+\f1 \
+            
+\f0 (
+\f1 \
+                
+\f0 CHAT_ID,
+\f1 \
+                
+\f0 FILE_NAME,
+\f1 \
+                
+\f0 MIME_TYPE,
+\f1 \
+                
+\f0 FILE_CONTENT
+\f1 \
+            
+\f0 )
+\f1 \
+            
+\f0 VALUES
+\f1 \
+            
+\f0 (
+\f1 \
+                
+\f0 V_CHAT_ID,
+\f1 \
+                
+\f0 R
+\f1 .
+\f0 P_FILENAME,
+\f1 \
+                
+\f0 R
+\f1 .
+\f0 P_MIME_TYPE,
+\f1 \
+                
+\f0 R
+\f1 .
+\f0 P_FILE_CONTENT
+\f1 \
+            
+\f0 );
+\f1 \
+\
+        
+\f0 END
+\f1  
+\f0 LOOP;
+\f1 \
+\
+        
+\f0 APEX_COLLECTION
+\f1 .
+\f0 DELETE_COLLECTION(P_FILE_COLL);
+\f1 \
+\
+    
+\f0 END
+\f1  
+\f0 IF;
+\f1 \
+\
+    
+\f0 P_FLAG
+\f1  
+\f0 :=
+\f1  
+\f0 'T';
+\f1 \
+    
+\f0 P_MSG
+\f1   
+\f0 :=
+\f1  
+\f0 'Message
+\f1  
+\f0 sent
+\f1  
+\f0 successfully
+\f1 .
+\f0 ';
+\f1 \
+\
+
+\f0 EXCEPTION
+\f1 \
+    
+\f0 WHEN
+\f1  
+\f0 OTHERS
+\f1  
+\f0 THEN
+\f1 \
+        
+\f0 P_FLAG
+\f1  
+\f0 :=
+\f1  
+\f0 'F';
+\f1 \
+        
+\f0 P_MSG
+\f1   
+\f0 :=
+\f1  
+\f0 'Unable
+\f1  
+\f0 to
+\f1  
+\f0 send
+\f1  
+\f0 the
+\f1  
+\f0 message
+\f1 . 
+\f0 Please
+\f1  
+\f0 try
+\f1  
+\f0 again
+\f1 .
+\f0 ';
+\f1 \
+
+\f0 END
+\f1  
+\f0 APEX_ADD_CHAT;
+\f1 \
+
+\f0 /}
